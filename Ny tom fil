@@ -1,0 +1,147 @@
+ Question 1:
+
+An easy way to replace the contents of a div would be this (placed at the end of the document):
+
+<script>
+  var myAnchor = document.getElementById('mainText');
+  var mySpan = document.createElement("div");
+  mySpan.innerHTML = "replaced anchor!";
+  myAnchor.parentNode.replaceChild(mySpan, myAnchor);.
+</script>
+
+However, that's not what you want, you want to replace a class with another class, and its contents.
+To do that, AND for the code to be async, AND in the head of the element, I would do this:
+
+1) I would place this in the <head>
+<script>
+  var thejs = document.createElement('script'); 
+  resource.src = "//some-domain.com/thejs.js";
+  var script = document.getElementsByTagName('script')[0];
+  script.parentNode.insertBefore(thejs, script);
+</script>
+
+2) Place the actual code to replace the class in a separate .js file, hosted someplace else, or on the same domain. This way, we can async load the code, which is the same as the above with a getElementsByClassName instead, and:
+
+				        
+	function GetElements () {
+    	var container = document.getElementById ("container");
+    		if (container.getElementsByClassName) {
+           		var tag = container.getElementsByClassName ("mainText");
+           		for (var i = 0; i < tag.length; i++) {
+    	            var tags = tag[i];
+                    alert ("The contents of the " + (i + 1) + ". redText element are\n" + redTag.innerHTML);
+                }
+            }
+    }
+
+However, an alternative solution which I prefer would be this:
+
+Place this in a separate JS file:
+
+	document.addEventListener("DOMContentLoaded", function(event) {
+		var original = document.querySelector(".mainText");
+		original.className = "cfNew";
+		div.innerHTML = "New text here";
+	});
+
+Then load the .js file inside the <head> section. Problem solved.
+I prefer the last method.
+
+
+Question 2:
+
+Without any changes to the actual form, the most simple method would be attaching an onclick event to the submit button that calls the function. We can define the function either in the body of the document, or by calling another script in the head.
+
+Place this before or after the body.
+<script>
+var cfTrack = function(val) { alert("Tracked "+val) };
+</script>
+
+Replace the button with this:
+
+<button id="continue-btn" type="submit" class="linkButton medium submit" name="clickSubmit" onclick="cfTrack();"><span><span>Continue</span></span></button>
+
+Question 3:
+
+Instead of messing with Javascript, I would rely on HTML5 and use this simple method:
+
+<p>Confirm Password: <input type="password" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])\w{6,}" name="user.password"></p>
+
+This returns a "Please match the request format." if the password is not correct. The format can be changed (the required pattern) and the message can be changed too with a customValidity attribute.
+
+However, if you really want Javascript, then this might do the trick:
+
+
+function checkForm(form) {
+
+if(form.pass.value != "" && form.pass.value == form.pass2.value) { 
+	if(form.pass.value.length < 6) { 
+		alert("Error: Password must contain at least six characters!"); 
+		form.pass.focus(); 
+		return false; 
+	} 
+
+	if(form.pass.value == form.username.value) { 
+		alert("Error: Password must be different from Username!"); 
+		form.pass.focus(); 
+		return false; 
+	} 
+
+re = /[0-9]/; 
+	if(!re.test(form.passwrod.value)) { 
+		alert("Error: password must contain at least one number (0-9)!"); 
+		form.pass.focus(); 
+		return false; 
+	} 
+
+re = /[a-z]/; 
+	if(!re.test(form.pass.value)) { 
+		alert("Error: password must contain at least one lowercase letter (a-z)!"); 
+		form.pass.focus(); 
+		return false; 
+	} 
+
+re = /[A-Z]/; 
+	if(!re.test(form.pass.value)) { 
+	alert("Error: password must contain at least one uppercase letter (A-Z)!"); 
+	form.pass.focus(); 
+	return false; 
+	} 
+
+} else { alert("Error: Please check that you've entered and confirmed your password!"); 
+	form.pass.focus(); return false; } 
+	alert("You entered a valid password: " + form.pass.value); 
+	return true; 
+	}
+
+I would really recommend using HTML5 instead :).
+
+Question 4:
+
+Add this to your estimator_calculators.min.css:
+
+#partprice4 {
+	text-weight: 800em;
+	color: red;
+}
+
+For applying the discounts, we need to look at the updateTotal function on line 322.
+The forumla for applying a 10% discount is this: 
+
+Math.floor(price_pt - (price_pt * 10 / 100));
+
+// However, I imagine the discount changes and needs an easy update, so line 357 would be:
+
+Math.floor(price_pt - ($('input[name=discounts]:checked').val() * price_pt / 100); 
+
+// This calculates the input discount and then substracts it from the part-time price (price_pt).
+
+In any case, line 305: 
+
+$('#partprice4').html('$'+addCommas(price_pt-grants-discounts-transfer_pt)); 
+
+// Seems to automatically substract the discount, so in that case, we only need to define the discounts as: 
+
+Math.floor(price_pt * discount_val / 100); 
+
+// where discount_val would be an easy to change input. Line 504 to line 507 tells me that there is already an input named discounts.
